@@ -43,29 +43,6 @@ function tetromino2dArrayIteratorCallback(origTetrominoShape, fn){
     return newShape;
 }
 
-
-
-
-// console.log(tetromino1dArrToString(tetromino));
-
-//
-// var tetromino90DegreesArr = tetromino2dArrayIteratorCallback(tetromino, function(x, y){
-//     return (12 + y) - (x * 4)
-// });
-//
-// var tetromino180DegreesArr = tetromino2dArrayIteratorCallback(tetromino, function(x, y){
-//     return (15 - x) - (y * 4)
-// });
-//
-// var tetromino270DegreesArr = tetromino2dArrayIteratorCallback(tetromino, function(x, y){
-//     return (3 - y) + (x * 4)
-// });
-//
-// // console.log("\n");
-// console.log(tetromino1dArrToString(tetromino90DegreesArr));
-// console.log(tetromino1dArrToString(tetromino180DegreesArr));
-// console.log(tetromino1dArrToString(tetromino270DegreesArr));
-
 function rotateTetromino(nOfRotatationsNumber, currentTetromino){
     var rotatedTetrominoShape;
     switch (nOfRotatationsNumber % 4){
@@ -95,19 +72,19 @@ function rotateTetromino(nOfRotatationsNumber, currentTetromino){
 }
 
 function drawTetrominoBlockToCanvas(arr1d, canvasCtx){
-    ctx.clearRect(0,0, 100, 100);
+    canvasCtx.clearRect(0,0, 100, 100);
     var blockSize = 25;
     var y = 0;
     for (var x = 0; x < 16; x++){
         if(arr1d[x] == 1){
-            ctx.fillStyle = "#BF0000";
-            ctx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, blockSize);
-            ctx.fillStyle = "#FF0000";
-            ctx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, 4);
-            ctx.fillRect((x % 4) * blockSize, y * blockSize, 4, blockSize);
-            ctx.fillStyle = "#8F0000";
-            ctx.fillRect((x % 4) * blockSize, (y * blockSize) + (blockSize - 4), blockSize, 4);
-            ctx.fillRect(((x % 4) * blockSize) + blockSize - 4, y * blockSize, 4, blockSize);
+            canvasCtx.fillStyle = "#BF0000";
+            canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, blockSize);
+            canvasCtx.fillStyle = "#FF0000";
+            canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, 4);
+            canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, 4, blockSize);
+            canvasCtx.fillStyle = "#8F0000";
+            canvasCtx.fillRect((x % 4) * blockSize, (y * blockSize) + (blockSize - 4), blockSize, 4);
+            canvasCtx.fillRect(((x % 4) * blockSize) + blockSize - 4, y * blockSize, 4, blockSize);
         }
 
         if((x+1) % 4 == 0 && x+1 != 16)
@@ -118,17 +95,44 @@ function drawTetrominoBlockToCanvas(arr1d, canvasCtx){
 
 
 var container = document.getElementById("container");
-var canvas = document.getElementById("tetromino-block");
-var ctx = canvas.getContext("2d");
+// var canvas = document.getElementById("tetromino-block");
+// var ctx = canvas.getContext("2d");
+var tetrominoBlocks = [tetrominoIBlock, tetrominoSBlock, tetrominoJBlock];
+
+canvasesForBlocks = tetrominoBlocks.map(function(tetrominoBlock){
+    // var blockContainer = document.createElement("div");
+
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    canvas.className = "tetromino-block";
+    canvas.width = 100;
+    canvas.height = 100;
+    canvas.style.marginRight = "5px";
+
+    var referencesObj = {ctx: ctx, canvas: canvas};
+    return referencesObj;
+});
+
+canvasesForBlocks.forEach(function(canvasObjRef){
+    container.append(canvasObjRef.canvas);
+});
+
 
 var rotation = 0;
-var currentStateOfRotatedTetrominoBlockArr;
+// var currentStateOfRotatedTetrominoBlockArr;
 var tid = window.setInterval(function (){
-    currentStateOfRotatedTetrominoBlockArr = rotateTetromino(rotation, currentTetrominoBlock);
-    container.innerText = tetromino1dArrToString(currentStateOfRotatedTetrominoBlockArr);
-    drawTetrominoBlockToCanvas(currentStateOfRotatedTetrominoBlockArr);
+    canvasesForBlocks.forEach(function(canvasObjRef, i){
+        var currentTetrominoBlockArr = tetrominoBlocks[i];
+        console.log(currentTetrominoBlockArr);
+        var currentStateOfRotatedTetrominoBlockArr = rotateTetromino(rotation, currentTetrominoBlockArr);
+        drawTetrominoBlockToCanvas(currentStateOfRotatedTetrominoBlockArr, canvasObjRef.ctx);
+    });
+    // container.innerText = tetromino1dArrToString(currentStateOfRotatedTetrominoBlockArr);
     rotation++;
 }, 500 / 2);
+
+
+
 
 
 
