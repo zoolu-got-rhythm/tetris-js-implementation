@@ -5,15 +5,15 @@ var tetrominoSBlock = [0,1,0,0,
                          0,0,1,0,
                          0,0,0,0];
 
-var tetrominoJBlock = [0,0,1,0,
-                        0,0,1,0,
-                        0,1,1,0,
+var tetrominoJBlock = [0,0,2,0,
+                        0,0,2,0,
+                        0,2,2,0,
                         0,0,0,0];
 
-var tetrominoIBlock = [0,0,1,0,
-                        0,0,1,0,
-                        0,0,1,0,
-                        0,0,1,0];
+var tetrominoIBlock = [0,0,3,0,
+                        0,0,3,0,
+                        0,0,3,0,
+                        0,0,3,0];
 
 var currentTetrominoBlock = tetrominoJBlock;
 
@@ -35,8 +35,6 @@ function tetromino2dArrayIteratorCallback(origTetrominoShape, fn){
         for (var x = 0; x < 4; x++){
             // i = index
             var i = fn(x, y);
-            // console.log((y * 4) + x);
-            // console.log(i);
             newShape[(y * 4) + x] = origTetrominoShape[i];
         }
     }
@@ -70,21 +68,33 @@ function rotateTetromino(nOfRotatationsNumber, currentTetromino){
 
     return rotatedTetrominoShape;
 }
+var lilac = "#cc00ff";
+var red = "#fF0000";
+var limeGreen = "#00cc00";
+
+function colourTetrominoBlock(x, y, canvasCtx, colour){
+    var blockSize = 25;
+    canvasCtx.fillStyle = colour;
+    canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, blockSize);
+    canvasCtx.fillStyle = pSBC(0.20, colour);
+    canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, 4);
+    canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, 4, blockSize);
+    canvasCtx.fillStyle = pSBC(-0.20, colour);
+    canvasCtx.fillRect((x % 4) * blockSize, (y * blockSize) + (blockSize - 4), blockSize, 4);
+    canvasCtx.fillRect(((x % 4) * blockSize) + blockSize - 4, y * blockSize, 4, blockSize);
+}
 
 function drawTetrominoBlockToCanvas(arr1d, canvasCtx){
-    canvasCtx.clearRect(0,0, 100, 100);
-    var blockSize = 25;
+    canvasCtx.fillStyle = "#000000";
+    canvasCtx.fillRect(0,0, 100, 100);
     var y = 0;
     for (var x = 0; x < 16; x++){
         if(arr1d[x] == 1){
-            canvasCtx.fillStyle = "#BF0000";
-            canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, blockSize);
-            canvasCtx.fillStyle = "#FF0000";
-            canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, 4);
-            canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, 4, blockSize);
-            canvasCtx.fillStyle = "#8F0000";
-            canvasCtx.fillRect((x % 4) * blockSize, (y * blockSize) + (blockSize - 4), blockSize, 4);
-            canvasCtx.fillRect(((x % 4) * blockSize) + blockSize - 4, y * blockSize, 4, blockSize);
+            colourTetrominoBlock(x, y, canvasCtx, red);
+        }else if(arr1d[x] == 2){
+            colourTetrominoBlock(x, y, canvasCtx, lilac);
+        }else if(arr1d[x] == 3){
+            colourTetrominoBlock(x, y, canvasCtx, limeGreen);
         }
 
         if((x+1) % 4 == 0 && x+1 != 16)
