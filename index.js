@@ -1,9 +1,9 @@
 
 
 var tetrominoSBlock = [0,1,0,0,
-                         0,1,1,0,
-                         0,0,1,0,
-                         0,0,0,0];
+                        0,1,1,0,
+                        0,0,1,0,
+                        0,0,0,0];
 
 var tetrominoJBlock = [0,0,2,0,
                         0,0,2,0,
@@ -18,7 +18,7 @@ var tetrominoIBlock = [0,0,3,0,
 var currentTetrominoBlock = tetrominoJBlock;
 
 function tetromino1dArrToString(arr1d){
-    str = ""
+    var str = ""
     for (var x = 0; x < 16; x++){
        str += arr1d[x].toString();
        if((x+1) % 4 == 0 && x+1 != 16)
@@ -100,7 +100,6 @@ function drawTetrominoBlockToCanvas(arr1d, canvasCtx){
         if((x+1) % 4 == 0 && x+1 != 16)
             y++;
     }
-    // str += "\n";
 }
 
 
