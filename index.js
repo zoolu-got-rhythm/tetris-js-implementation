@@ -190,7 +190,7 @@ function updateGrid(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOff
     var gameGridStateArr1dCopy = gameGridStateArr1d.slice();
     tetromino2dArrayIteratorForEach(tetrominoShapeArr1d, function(x, y, symbol){
         let i = gameGridWidth * (yOffSet + y) + xOffSet + x;
-        // if(symbol == 2)
+        if(symbol == 2)
             gameGridStateArr1dCopy[i] = symbol;
     });
     // return new game grid state 1d arr
