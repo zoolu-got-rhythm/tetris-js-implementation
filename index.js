@@ -29,6 +29,7 @@ function tetromino1dArrToString(arr1d){
 }
 
 // mapping of tetromino original shape to new degrees of shape via callback
+// maybe rename this function to something including word 'map'
 function tetromino2dArrayIteratorCallback(origTetrominoShape, fn){
     var newShape = new Array(16);
     for (var y = 0; y < 4; y++){
@@ -40,6 +41,17 @@ function tetromino2dArrayIteratorCallback(origTetrominoShape, fn){
     }
     return newShape;
 }
+
+function tetromino2dArrayIteratorForEach(tetrominoShape, fn){
+    for (var y = 0; y < 4; y++){
+        for (var x = 0; x < 4; x++){
+            var symbolAtIndex = tetrominoShape[(y * 4) + x];
+            fn(x, y, symbolAtIndex);
+        }
+    }
+}
+
+
 
 function rotateTetromino(nOfRotatationsNumber, currentTetromino){
     var rotatedTetrominoShape;
@@ -132,13 +144,62 @@ var rotation = 0;
 var tid = window.setInterval(function (){
     canvasesForBlocks.forEach(function(canvasObjRef, i){
         var currentTetrominoBlockArr = tetrominoBlocks[i];
-        console.log(currentTetrominoBlockArr);
+        // console.log(currentTetrominoBlockArr);
         var currentStateOfRotatedTetrominoBlockArr = rotateTetromino(rotation, currentTetrominoBlockArr);
         drawTetrominoBlockToCanvas(currentStateOfRotatedTetrominoBlockArr, canvasObjRef.ctx);
     });
     // container.innerText = tetromino1dArrToString(currentStateOfRotatedTetrominoBlockArr);
     rotation++;
 }, 500 / 2);
+
+height = 16;
+width = 10;
+var grid = [];
+{
+    for(let y = 0; y < height; y++){
+        for(let x = 0; x < width; x++){
+            // inset outside wall cells
+            if(x == 0 || x == width - 1 || y == height - 1){
+                grid.push("#");
+            // fill empty cells
+            }else{
+                // console.log("#");
+                grid.push(" ");
+            }
+        }
+    }
+}
+
+function printGridAsStr(gridArr1d, w){
+    var str = ""
+    for (var i = 0; i < gridArr1d.length; i++){
+        str += gridArr1d[i];
+        if((i+1) % (w) == 0)
+            str += "\n";
+    }
+    return str;
+}
+
+console.log(printGridAsStr(grid, width));
+
+var xOffSet = (width / 2) - 2;
+var yOffSet = 0;
+
+// take current tetromino 1d arr and put on grid, return grid state with tetromino super imposed on it
+function updateGrid(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSet, yOffSet){
+    var gameGridStateArr1dCopy = gameGridStateArr1d.slice();
+    tetromino2dArrayIteratorForEach(tetrominoShapeArr1d, function(x, y, symbol){
+        let i = gameGridWidth * (yOffSet + y) + xOffSet + x;
+        // if(symbol == 2)
+            gameGridStateArr1dCopy[i] = symbol;
+    });
+    // return new game grid state 1d arr
+    return gameGridStateArr1dCopy;
+}
+
+var newGridState = updateGrid(currentTetrominoBlock, grid, width, xOffSet, yOffSet);
+console.log(printGridAsStr(newGridState, width));
+
 
 
 
