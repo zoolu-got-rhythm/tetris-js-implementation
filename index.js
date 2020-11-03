@@ -28,7 +28,7 @@ function tetromino1dArrToString(arr1d){
 }
 
 // mapping of tetromino original shape to new degrees of shape via callback
-// maybe rename this function to something including word 'map'
+// maybe rename this function to something including word 'map' rename from 1d to 2d
 function tetromino2dArrayIteratorCallback(origTetrominoShape, fn){
     var newShape = new Array(16);
     for (var y = 0; y < 4; y++){
@@ -83,39 +83,69 @@ var red = "#fF0000";
 var limeGreen = "#00cc00";
 
 function colourTetrominoBlock(x, y, canvasCtx, colour){
-    var blockSize = 25;
+    var blockSize = 20;
     canvasCtx.fillStyle = colour;
-    canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, blockSize);
-    canvasCtx.fillStyle = pSBC(0.20, colour);
-    canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, blockSize, 4);
-    canvasCtx.fillRect((x % 4) * blockSize, y * blockSize, 4, blockSize);
+    canvasCtx.fillRect((x % 10) * blockSize, y * blockSize, blockSize, blockSize);
+    canvasCtx.fillStyle = pSBC(0.10, colour);
+    canvasCtx.fillRect((x % 10) * blockSize, y * blockSize, blockSize, 4);
+    canvasCtx.fillRect((x % 10) * blockSize, y * blockSize, 4, blockSize);
     canvasCtx.fillStyle = pSBC(-0.20, colour);
-    canvasCtx.fillRect((x % 4) * blockSize, (y * blockSize) + (blockSize - 4), blockSize, 4);
-    canvasCtx.fillRect(((x % 4) * blockSize) + blockSize - 4, y * blockSize, 4, blockSize);
+    canvasCtx.fillRect((x % 10) * blockSize, (y * blockSize) + (blockSize - 4), blockSize, 4);
+    canvasCtx.fillRect(((x % 10) * blockSize) + blockSize - 4, y * blockSize, 4, blockSize);
 }
 
-function drawTetrominoBlockToCanvas(arr1d, canvasCtx){
+// add grid w and h params to this draw function
+function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSet, yOffSet, canvasCtx){
+
+
+
+
     canvasCtx.fillStyle = "#000000";
-    canvasCtx.fillRect(0,0, 100, 100);
+
+    var blockSize = 20;
+    canvasCtx.fillRect(0,0, 200, 320);
     var y = 0;
-    for (var x = 0; x < 16; x++){
-        if(arr1d[x] == 1){
+    for (var x = 0; x < 10 * 16; x++){
+        if(gameGridStateArr1d[x] == 1){
             colourTetrominoBlock(x, y, canvasCtx, red);
-        }else if(arr1d[x] == 2){
+        }else if(gameGridStateArr1d[x] == 2){
             colourTetrominoBlock(x, y, canvasCtx, lilac);
-        }else if(arr1d[x] == 3){
+        }else if(gameGridStateArr1d[x] == 3){
             colourTetrominoBlock(x, y, canvasCtx, limeGreen);
+        }else if(gameGridStateArr1d[x] == " "){
+            // not needed currently with way of colour'd whole grid
+        }else if(gameGridStateArr1d[x] == "#"){
+            canvasCtx.fillStyle = "#1238ee";
+            canvasCtx.fillRect((x % 10) * blockSize, y * blockSize, 20, 20);
         }
 
-        if((x+1) % 4 == 0 && x+1 != 16)
+
+
+        if((x+1) % 10 == 0)
             y++;
     }
+
+    // very ineficiient way of doing this: must refactor this
+    tetromino2dArrayIteratorForEach(tetrominoShapeArr1d, function(xFromCallBack, yFromCallBack, symbol) {
+        let i = gameGridWidth * (yOffSet + xFromCallBack) + xOffSet + yFromCallBack;
+        if(i = x){
+            if(symbol == 1){
+                colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, red);
+            }else if(symbol == 2){
+                colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, lilac);
+            }else if(symbol == 3) {
+                colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, limeGreen);
+            }
+        }
+    });
+
+
 }
 
 
 var container = document.getElementById("container");
-// var canvas = document.getElementById("tetromino-block");
-// var ctx = canvas.getContext("2d");
+var canvas = document.getElementById("tetris");
+var ctx = canvas.getContext("2d");
 // var tetrominoBlocks = [tetrominoIBlock, tetrominoSBlock, tetrominoJBlock];
 //
 // canvasesForBlocks = tetrominoBlocks.map(function(tetrominoBlock){
@@ -180,7 +210,15 @@ function isShapeBottomCollidingWithAnotherSymbol(tetrominoShapeArr1d, gameGridSt
     var isBlockCollidingWithAnotherSymbol = false;
     tetromino2dArrayIteratorForEach(tetrominoShapeArr1d, function(x, y, symbol){
         let i = gameGridWidth * (yOffSet + y) + xOffSet + x;
-        if(symbol > 0 && gameGridStateArr1d[i] == "#" && y == 3){
+        // console.log(i);
+        // if(y == 1){
+        //     console.log("pos: " + (y * 4 + x));
+        //     console.log(gameGridStateArr1d[i])
+        //     console.log(symbol);
+        // }
+
+        if((gameGridStateArr1d[i] === "#" || gameGridStateArr1d[i] > 0) && symbol > 0){
+            console.log("match");
             isBlockCollidingWithAnotherSymbol = true;
             // note: an optimisation would be finding a way to exit this looped forEach type callback -
             // as soon as this enclosing if statement is true
@@ -202,56 +240,78 @@ function isShapeBottomCollidingWithAnotherSymbol(tetrominoShapeArr1d, gameGridSt
 // grid height and width
 height = 16;
 width = 10;
-var grid = [];
+var gridState = [];
 {
     for(let y = 0; y < height; y++){
         for(let x = 0; x < width; x++){
             // inset outside wall cells
             if(x == 0 || x == width - 1 || y == height - 1){
-                grid.push("#");
+                gridState.push("#");
                 // fill empty cells
             }else{
                 // console.log("#");
-                grid.push(" ");
+                gridState.push(" ");
             }
         }
     }
 }
 
-var prevGridState = grid;
-var newGridState;
 var rotationNumberState = 0;
-var currentTetrominoBlockState = tetrominoIBlock;
+var currentTetrominoBlockState = tetrominoSBlock;
 var xOffSetState = (width / 2) - 2;
-var yOffSetState = 2;
+var yOffSetState = 0;
 // var currentTetrominoBlock = tetrominoIBlock;
 
 function gameLoop(){
     // read in from player input (maybe a buffer?)
     // update offset x and y with player input
 
-    var rotatadTetrominoGrid = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
 
-    var newGridState =
-        updateAndGetGrid(rotatadTetrominoGrid, prevGridState, width, xOffSetState, yOffSetState);
+    var currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+    console.log(tetromino1dArrToString(currentTetrominoBlockWhenRotated));
 
-    console.log(printGridAsStr(newGridState, width));
+    yOffSetState++;
+    // rotationNumberState++;
+    if(isShapeBottomCollidingWithAnotherSymbol(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)){
+        // newGridState = prevGridState;
+        yOffSetState--;
+        rotationNumberState--;
+        var newGridState =
+            updateAndGetGrid(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState);
+        gridState = newGridState
+
+        // assign new random tetromino block
+        currentTetrominoBlockState = [tetrominoIBlock, tetrominoSBlock, tetrominoJBlock][Math.floor(Math.random() * 3)];
+        // reset y offset position
+        yOffSetState = 0;
+        rotationNumberState = 0;
+    }
+
+    drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
+    // rotationNumberState++;
 
 
-    // wall detection:
-    if(isShapeBottomCollidingWithAnotherSymbol(rotatadTetrominoGrid, prevGridState, width, xOffSetState, yOffSetState))
-        newGridState = prevGridState;
 
-    prevGridState = newGridState;
 
-    xOffSetState++;
+
+
+    // var rotatadTetrominoGrid = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
     //repeat
 }
 
 gameLoop();
 
+window.setInterval(gameLoop, 1000 / 2);
 
 
+// var newGridState =
+//     updateAndGetGrid(currentTetrominoBlockState, grid, width, xOffSetState, yOffSetState);
+//
+// isShapeBottomCollidingWithAnotherSymbol()
+
+
+// console.log(printGridAsStr(newGridState, width));
+// drawGridToCanvas(newGridState, ctx);
 
 
 
