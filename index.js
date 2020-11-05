@@ -261,6 +261,7 @@ var rotationNumberState = 0;
 var currentTetrominoBlockState = tetrominoSBlock;
 var xOffSetState = (width / 2) - 2;
 var yOffSetState = 0;
+var gameStartState = false;
 
 var currentTetrominoBlockWhenRotated;
 // var currentTetrominoBlock = tetrominoIBlock;
@@ -308,11 +309,14 @@ function gameLoop(){
     //repeat
 }
 
-// do 1 initial draw of game in init state
-currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
-drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
+function startGame(){
+    // do 1 initial draw of game in init state
+    currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+    drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
 // then start game loop after timeout arg duration
-window.setInterval(gameLoop, 1000 / 3);
+    window.setInterval(gameLoop, 1000 / 3);
+}
+
 
 
 // var newGridState =
@@ -328,6 +332,13 @@ window.setInterval(gameLoop, 1000 / 3);
 window.addEventListener("keydown", function(e){
     var keyString = e.code;
     console.log(keyString);
+
+    if(!gameStartState){
+        gameStartState = true;
+        startGame();
+        return;
+    }
+
     switch (keyString) {
         case "ArrowLeft" :
             xOffSetState--;
@@ -338,7 +349,6 @@ window.addEventListener("keydown", function(e){
         case "ArrowUp" :
             rotationNumberState++;
             break;
-
     }
     currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
 
