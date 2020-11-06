@@ -228,9 +228,51 @@ function isShapeBottomCollidingWithAnotherSymbol(tetrominoShapeArr1d, gameGridSt
     return isBlockCollidingWithAnotherSymbol;
 };
 
+// function isShapeSidesCollidingWithAnotherSymbol(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSet, yOffSet){
+//     var isBlockCollidingWithAnotherSymbol = false;
+//     tetromino2dArrayIteratorForEach(tetrominoShapeArr1d, function(x, y, symbol){
+//         let i = gameGridWidth * (yOffSet + y) + xOffSet + x;
+//         // console.log(i);
+//         // if(y == 1){
+//         //     console.log("pos: " + (y * 4 + x));
+//         //     console.log(gameGridStateArr1d[i])
+//         //     console.log(symbol);
+//         // }
+//
+//         if((gameGridStateArr1d[i] === "#" && (x == 0 || y == 9) || gameGridStateArr1d[i] > 0) && symbol > 0){
+//             // console.log("match");
+//             isBlockCollidingWithAnotherSymbol = true;
+//             // note: an optimisation would be finding a way to exit this looped forEach type callback -
+//             // as soon as this enclosing if statement is true
+//         }
+//     });
+//     return isBlockCollidingWithAnotherSymbol;
+// };
+
 // var newGridState = updateAndGetGrid(currentTetrominoBlock, grid, width, xOffSet, yOffSet);
 // console.log(printGridAsStr(newGridState, width));
 
+function getYRowNumbersThatNeedClearing(gridStateArr1d, gridWidth, gridHeight){
+    var arrayOfYLineIndicies = [];
+    var nOfSymbolsOnLine = 0;
+    for(var y = gridHeight - 2; y >= 0; y--){ // account for wall sides
+        for(var x = gridWidth - 2; x > 0; x--){ // account for wall sides
+            // console.log(y + x)
+            var currentSymbol = gridStateArr1d[y * gridWidth + x];
+            // if(y === 14){
+            //     console.log(gridStateArr1d[y * gridWidth + x]);
+            // }
+            if (typeof currentSymbol !== "string" && currentSymbol > 0){
+                nOfSymbolsOnLine++;
+                // console.log(gridStateArr1d[y  x]);
+                if(nOfSymbolsOnLine == gridWidth - 2)
+                    arrayOfYLineIndicies.push(y);
+            }
+        }
+        nOfSymbolsOnLine = 0;
+    }
+    return arrayOfYLineIndicies;
+}
 
 
 
@@ -283,11 +325,22 @@ function gameLoop(){
             updateAndGetGrid(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState);
         gridState = newGridState
 
+        console.log("check lines");
+        var yRowsThatNeedClearingArr = getYRowNumbersThatNeedClearing(gridState, width, height);
+        if(yRowsThatNeedClearingArr.length > 0){ // if condition pass we have rows that need clearing
+            alert("match");
+            // y row index number
+        }
+
         // assign new random tetromino block
         currentTetrominoBlockState = [tetrominoTBlock, tetrominoSBlock, tetrominoJBlock][Math.floor(Math.random() * 3)];
         // reset y offset position
         yOffSetState = 0;
+        xOffSetState = (width / 2) - 2;
         currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+
+        // if(row of blocks)
+            // eleminate row of blocks on that row
 
         // rotationNumberState = 0;
     }
@@ -342,15 +395,29 @@ window.addEventListener("keydown", function(e){
     switch (keyString) {
         case "ArrowLeft" :
             xOffSetState--;
+            if(isShapeBottomCollidingWithAnotherSymbol(
+                currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)){
+                xOffSetState++;
+            }
             break;
         case "ArrowRight" :
             xOffSetState++;
+            if(isShapeBottomCollidingWithAnotherSymbol(
+                currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)){
+                xOffSetState--;
+            }
             break;
         case "ArrowUp" :
             rotationNumberState++;
+            currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+            if(isShapeBottomCollidingWithAnotherSymbol(
+                currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)){
+                rotationNumberState--;
+            }
             break;
     }
     currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+
 
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
 })
