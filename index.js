@@ -80,6 +80,8 @@ function rotateTetromino(nOfRotatationsNumber, currentTetromino){
 
     return rotatedTetrominoShape;
 }
+
+var lightYellow = "#ffffcc";
 var lilac = "#cc00ff";
 var red = "#fF0000";
 var limeGreen = "#00cc00";
@@ -98,7 +100,7 @@ function colourTetrominoBlock(x, y, canvasCtx, colour){
 }
 
 // add grid w and h params to this draw function
-function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSet, yOffSet, canvasCtx){
+function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSet, yOffSet, canvasCtx, yRowNumbersThatNeedClearing1dArr, lightUpYRowThatNeedsClearing){
     canvasCtx.fillStyle = "#000000";
 
     var blockSize = 200 / 10;
@@ -106,6 +108,9 @@ function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSe
     var y = 0;
 
     for (var x = 0; x < 16 * 10; x++){
+
+
+
         if(gameGridStateArr1d[x] == 1){
             colourTetrominoBlock(x, y, canvasCtx, red);
         }else if(gameGridStateArr1d[x] == 2){
@@ -119,9 +124,25 @@ function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSe
 
         }
 
+        if(yRowNumbersThatNeedClearing1dArr){ // if array exists as argument in this function
+            if(yRowNumbersThatNeedClearing1dArr.includes(y) ) {
+                if (lightUpYRowThatNeedsClearing && ((x) % 10 != 0 && (x) % 10 != 9)) {
+                    colourTetrominoBlock(x, y, canvasCtx, lightYellow);
+                    // continue;
+                } else if (!lightUpYRowThatNeedsClearing) {
+                    // colourTetrominoBlock(x, y, canvasCtx, red);
+                }
+            }
+        }
+
+
+
         if((x+1) % 10 == 0)
             y++;
     }
+
+    if(tetrominoShapeArr1d == null)
+        return;
 
     // very ineficiient way of doing this: must refactor this
     tetromino2dArrayIteratorForEach(tetrominoShapeArr1d, function(xFromCallBack, yFromCallBack, symbol) {
@@ -334,61 +355,84 @@ var gameStartState = false;
 
 var currentTetrominoBlockWhenRotated;
 // var currentTetrominoBlock = tetrominoIBlock;
+var gridStateForClearingRowsAnimation;
+var clearingRowsAnimation = false;
+
+var yRowsThatNeedClearingArrState; // held in global state so can be accessed by clearingRowsAnimation, to know which rows to flash
+var gameLoopTimerId;
+var flashRowsThatNeedToClearAnimationTimerId;
 
 function gameLoop(){
     // read in from player input (maybe a buffer?)
     // update offset x and y with player input
 
-
-    currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
-
-    yOffSetState++;
-    // rotationNumberState++;
-    if(isShapeBottomCollidingWithAnotherSymbol(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)){
-        // newGridState = prevGridState;
-        yOffSetState--;
-        // rotationNumberState--;
-        var newGridState =
-            updateAndGetGrid(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState);
-        gridState = newGridState
-
-        console.log("check lines");
-        var yRowsThatNeedClearingArr = getYRowNumbersThatNeedClearing(gridState, width, height);
-        if(yRowsThatNeedClearingArr.length > 0){ // if condition pass we have rows that need clearing
-            // alert("match");
-            console.log(yRowsThatNeedClearingArr);
-            gridState = clearRowsOnGridArr1dByYNumbers(yRowsThatNeedClearingArr, gridState, width);
-            // y row index number
-        }
-
-        // assign new random tetromino block
-        currentTetrominoBlockState = [tetrominoTBlock, tetrominoSBlock, tetrominoJBlock][Math.floor(Math.random() * 3)];
-        // reset y offset position
-        yOffSetState = 0;
-        xOffSetState = (width / 2) - 2;
+    // if(!clearingRowsAnimation) {
         currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
 
-        // if(row of blocks)
+        yOffSetState++;
+        // rotationNumberState++;
+        if (isShapeBottomCollidingWithAnotherSymbol(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)) {
+            // newGridState = prevGridState;
+            yOffSetState--;
+            // rotationNumberState--;
+            var newGridState =
+                updateAndGetGrid(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState);
+            gridState = newGridState
+
+            console.log("check lines");
+            yRowsThatNeedClearingArrState = getYRowNumbersThatNeedClearing(gridState, width, height);
+            if (yRowsThatNeedClearingArrState.length > 0) { // if condition pass we have rows that need clearing
+                // alert("match");
+                console.log(yRowsThatNeedClearingArrState);
+
+                clearingRowsAnimation = true;
+                gridStateForClearingRowsAnimation = gridState;
+                gridState = clearRowsOnGridArr1dByYNumbers(yRowsThatNeedClearingArrState, gridState, width);
+                // y row index number
+            }
+
+            // assign new random tetromino block
+            currentTetrominoBlockState = [tetrominoTBlock, tetrominoSBlock, tetrominoJBlock][Math.floor(Math.random() * 3)];
+            // reset y offset position
+            yOffSetState = 0;
+            xOffSetState = (width / 2) - 2;
+            currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+
+            // if(row of blocks)
             // eleminate row of blocks on that row
 
-        // rotationNumberState = 0;
+            // rotationNumberState = 0;
+        }
+
+        // console.log(tetromino1dArrToString(currentTetrominoBlockWhenRotated));
+    // }
+
+    if(!clearingRowsAnimation){
+        drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
+    }else{
+        // draw animation to remove rows
+        window.clearInterval(gameLoopTimerId);
+        drawGame(null, gridStateForClearingRowsAnimation, width, xOffSetState, yOffSetState, ctx, yRowsThatNeedClearingArrState, true);
+        flashRowsThatNeedToClearAnimationTimerId = window.setInterval(drawRowsThatNeedClearingAsFlash, 1000 / 8)
     }
+}
 
-    // console.log(tetromino1dArrToString(currentTetrominoBlockWhenRotated));
-    drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
-
-
-
-    // rotationNumberState++;
-
-
-
-
-
-
-
-    // var rotatadTetrominoGrid = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
-    //repeat
+var shouldFlash = false;
+var nOfFlashOnAndOffTicks = 0;
+function drawRowsThatNeedClearingAsFlash(){
+    if(nOfFlashOnAndOffTicks == 10){
+        window.clearInterval(flashRowsThatNeedToClearAnimationTimerId);
+        shouldFlash = false;
+        nOfFlashOnAndOffTicks = 0;
+        clearingRowsAnimation = false;
+        drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
+        gameLoopTimerId = window.setInterval(gameLoop, 1000 / 3);
+    }else{
+        drawGame(null, gridStateForClearingRowsAnimation, width, xOffSetState, yOffSetState, ctx,
+            yRowsThatNeedClearingArrState, shouldFlash);
+    }
+    shouldFlash = !shouldFlash;
+    nOfFlashOnAndOffTicks++;
 }
 
 function startGame(){
@@ -396,7 +440,7 @@ function startGame(){
     currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
 // then start game loop after timeout arg duration
-    window.setInterval(gameLoop, 1000 / 3);
+    gameLoopTimerId = window.setInterval(gameLoop, 1000 / 3);
 }
 
 
@@ -412,6 +456,10 @@ function startGame(){
 // drawGridToCanvas(newGridState, ctx);
 
 window.addEventListener("keydown", function(e){
+
+    if(clearingRowsAnimation)
+        return;
+
     var keyString = e.code;
     console.log(keyString);
 
