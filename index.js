@@ -274,6 +274,33 @@ function getYRowNumbersThatNeedClearing(gridStateArr1d, gridWidth, gridHeight){
     return arrayOfYLineIndicies;
 }
 
+function clearRowsOnGridArr1dByYNumbers(arrOfYNumbers, gridStateArr1d, gridWidth){
+    var gridStateArdd1dCopy = gridStateArr1d.slice();
+    console.log(gridStateArdd1dCopy);
+    arrOfYNumbers.forEach((yNumber)=>{
+        console.log("spliced");
+        console.log(gridStateArdd1dCopy.splice(yNumber * gridWidth, gridWidth));
+
+
+        console.log(gridStateArdd1dCopy);
+    });
+
+    var newEmptyRow = []
+    for(var j = 0; j < arrOfYNumbers.length; j++)
+        for(var i = 0; i < gridWidth; i++){
+            if(i == 0 || i == gridWidth - 1){
+                newEmptyRow.push("#");
+            }else{
+                newEmptyRow.push("");
+            }
+
+        }
+    console.log(newEmptyRow);
+    gridStateArdd1dCopy = newEmptyRow.concat(gridStateArdd1dCopy);
+
+    return gridStateArdd1dCopy;
+}
+
 
 
 
@@ -328,7 +355,9 @@ function gameLoop(){
         console.log("check lines");
         var yRowsThatNeedClearingArr = getYRowNumbersThatNeedClearing(gridState, width, height);
         if(yRowsThatNeedClearingArr.length > 0){ // if condition pass we have rows that need clearing
-            alert("match");
+            // alert("match");
+            console.log(yRowsThatNeedClearingArr);
+            gridState = clearRowsOnGridArr1dByYNumbers(yRowsThatNeedClearingArr, gridState, width);
             // y row index number
         }
 
