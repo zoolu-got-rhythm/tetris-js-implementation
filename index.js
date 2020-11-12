@@ -87,44 +87,46 @@ var red = "#fF0000";
 var limeGreen = "#00cc00";
 var grey = "#aaaaaa"
 
-function colourTetrominoBlock(x, y, canvasCtx, colour, gameGridArrWidth){
-    var blockSize = 200 / gameGridArrWidth;
+function colourTetrominoBlock(x, y, canvasCtx, colour, gameGridArrWidth, screenWidth){
+    var blockSize = screenWidth / gameGridArrWidth;
     canvasCtx.fillStyle = colour;
     canvasCtx.fillRect((x % gameGridArrWidth) * blockSize, y * blockSize, blockSize, blockSize);
     canvasCtx.fillStyle = pSBC(0.20, colour);
-    canvasCtx.fillRect((x % gameGridArrWidth) * blockSize, y * blockSize, blockSize, 4);
-    canvasCtx.fillRect((x % gameGridArrWidth) * blockSize, y * blockSize, 4, blockSize);
+    canvasCtx.fillRect((x % gameGridArrWidth) * blockSize, y * blockSize, blockSize, (blockSize / 5));
+    canvasCtx.fillRect((x % gameGridArrWidth) * blockSize, y * blockSize, (blockSize / 5), blockSize);
     canvasCtx.fillStyle = pSBC(-0.20, colour);
-    canvasCtx.fillRect((x % gameGridArrWidth) * blockSize, (y * blockSize) + (blockSize - 4), blockSize, 4);
-    canvasCtx.fillRect(((x % gameGridArrWidth) * blockSize) + blockSize - 4, y * blockSize, 4, blockSize);
+    canvasCtx.fillRect((x % gameGridArrWidth) * blockSize, (y * blockSize) + (blockSize - (blockSize / 5)), blockSize, (blockSize / 5));
+    canvasCtx.fillRect(((x % gameGridArrWidth) * blockSize) + blockSize - (blockSize / 5), y * blockSize, (blockSize / 5), blockSize);
 }
 
 // add grid w and h params to this draw function
-function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSet, yOffSet, canvasCtx, yRowNumbersThatNeedClearing1dArr, lightUpYRowThatNeedsClearing){
+function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSet, yOffSet, canvasCtx,
+                  yRowNumbersThatNeedClearing1dArr, lightUpYRowThatNeedsClearing){
     canvasCtx.fillStyle = "#000000";
 
+    var screenWidth = 150;
     // var blockSize = 200 / 10;
-    canvasCtx.fillRect(0,0, 200, 320);
+    canvasCtx.fillRect(0,0, screenWidth, (screenWidth / gameGridWidth) * 16);
     var y = 0;
 
     for (var x = 0; x < 16 * gameGridWidth; x++){
 
         if(gameGridStateArr1d[x] == 1){
-            colourTetrominoBlock(x, y, canvasCtx, red, gameGridWidth);
+            colourTetrominoBlock(x, y, canvasCtx, red, gameGridWidth, screenWidth);
         }else if(gameGridStateArr1d[x] == 2){
-            colourTetrominoBlock(x, y, canvasCtx, lilac, gameGridWidth);
+            colourTetrominoBlock(x, y, canvasCtx, lilac, gameGridWidth, screenWidth);
         }else if(gameGridStateArr1d[x] == 3){
-            colourTetrominoBlock(x, y, canvasCtx, limeGreen, gameGridWidth);
+            colourTetrominoBlock(x, y, canvasCtx, limeGreen, gameGridWidth, screenWidth);
         }else if(gameGridStateArr1d[x] == " "){
             // not needed currently with way of colour'd whole grid
         }else if(gameGridStateArr1d[x] == "#"){
-            colourTetrominoBlock(x, y, canvasCtx, grey, gameGridWidth);
+            colourTetrominoBlock(x, y, canvasCtx, grey, gameGridWidth, screenWidth);
         }
 
         if(yRowNumbersThatNeedClearing1dArr){ // if array exists as argument in this function
             if(yRowNumbersThatNeedClearing1dArr.includes(y) ) {
                 if (lightUpYRowThatNeedsClearing && ((x) % gameGridWidth != 0 && (x) % gameGridWidth != (gameGridWidth - 1))) {
-                    colourTetrominoBlock(x, y, canvasCtx, lightYellow, gameGridWidth);
+                    colourTetrominoBlock(x, y, canvasCtx, lightYellow, gameGridWidth, screenWidth);
                     // continue;
                 } else if (!lightUpYRowThatNeedsClearing) {
                     // colourTetrominoBlock(x, y, canvasCtx, red);
@@ -141,16 +143,16 @@ function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSe
 
     // very ineficiient way of doing this: must refactor this
     tetromino2dArrayIteratorForEach(tetrominoShapeArr1d, function(xFromCallBack, yFromCallBack, symbol) {
-        let i = gameGridWidth * (yOffSet + xFromCallBack) + xOffSet + yFromCallBack;
-        if(i == x){
+        // let i = gameGridWidth * (yOffSet + xFromCallBack) + xOffSet + yFromCallBack;
+        // if(i == x){
             if(symbol == 1){
-                colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, red);
+                colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, red, gameGridWidth, screenWidth);
             }else if(symbol == 2){
-                colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, lilac);
+                colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, lilac, gameGridWidth, screenWidth);
             }else if(symbol == 3) {
-                colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, limeGreen);
+                colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, limeGreen, gameGridWidth, screenWidth);
             }
-        }
+        // }
     });
 
 
