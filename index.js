@@ -104,7 +104,7 @@ function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSe
                   yRowNumbersThatNeedClearing1dArr, lightUpYRowThatNeedsClearing){
     canvasCtx.fillStyle = "#000000";
 
-    var screenWidth = 150;
+    var screenWidth = 300;
     // var blockSize = 200 / 10;
     canvasCtx.fillRect(0,0, screenWidth, (screenWidth / gameGridWidth) * 16);
     var y = 0;
