@@ -146,8 +146,8 @@ function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSe
 
     // very ineficiient way of doing this: must refactor this
     tetromino2dArrayIteratorForEach(tetrominoShapeArr1d, function(xFromCallBack, yFromCallBack, symbol) {
-        let i = gameGridWidth * (yOffSet + xFromCallBack) + xOffSet + yFromCallBack;
-        if(i = x){
+        // let i = gameGridWidth * (yOffSet + xFromCallBack) + xOffSet + yFromCallBack;
+        // if(i == x){
             if(symbol == 1){
                 colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, red);
             }else if(symbol == 2){
@@ -155,7 +155,7 @@ function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSe
             }else if(symbol == 3) {
                 colourTetrominoBlock(xOffSet + xFromCallBack, yOffSetState + yFromCallBack, canvasCtx, limeGreen);
             }
-        }
+        // }
     });
 
 
