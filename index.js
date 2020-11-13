@@ -154,8 +154,6 @@ function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSe
             }
         // }
     });
-
-
 }
 
 
