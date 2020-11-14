@@ -489,11 +489,5 @@ window.addEventListener("keydown", function(e){
             break;
     }
     currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
-
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
 })
-
-
-
-
-
