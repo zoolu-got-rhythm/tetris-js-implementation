@@ -1,4 +1,24 @@
+// import * as Tone from 'tone'
 
+var Tone = require("tone");
+
+var soundPlayerFallPiece = new Tone.Player("sounds/fall.wav").toDestination();
+var soundPlayerLineClear = new Tone.Player("sounds/clear.wav").toDestination();
+// soundPlayerLineClear.autostart = true;
+soundPlayerLineClear.playbackRate = 0.55;
+
+//create a synth and connect it to the main output (your speakers)
+
+const synth = new Tone.Synth().toDestination();
+synth.oscillator.type = "square";
+// synth.volume()
+
+//play a middle 'C' for the duration of an 8th note
+synth.triggerAttackRelease("C1", "32n");
+synth.volume.value = -35;
+
+
+console.log("sdf");
 
 var tetrominoSBlock = [0,1,0,
                         0,1,1,
@@ -324,8 +344,8 @@ function clearRowsOnGridArr1dByYNumbers(arrOfYNumbers, gridStateArr1d, gridWidth
 
 // init game state vars
 // grid height and width
-height = 16;
-width = 12;
+var height = 16;
+var width = 12;
 var gridState = [];
 {
     for(let y = 0; y < height; y++){
@@ -383,6 +403,8 @@ function gameLoop(){
                 clearingRowsAnimation = true;
                 gridStateForClearingRowsAnimation = gridState;
                 gridState = clearRowsOnGridArr1dByYNumbers(yRowsThatNeedClearingArrState, gridState, width);
+                soundPlayerLineClear.start(0, 0.15);
+
                 // y row index number
             }
 
@@ -397,6 +419,12 @@ function gameLoop(){
             // eleminate row of blocks on that row
 
             // rotationNumberState = 0;
+            // Tone.loaded().then(() => {
+            if(!clearingRowsAnimation)
+                soundPlayerFallPiece.start(0, 0.11);
+            // });
+        }else{
+            // synth.triggerAttackRelease("C5", "64n");
         }
 
         // console.log(tetromino1dArrToString(currentTetrominoBlockWhenRotated));
@@ -421,7 +449,7 @@ function drawRowsThatNeedClearingAsFlash(){
         nOfFlashOnAndOffTicks = 0;
         clearingRowsAnimation = false;
         drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
-        gameLoopTimerId = window.setInterval(gameLoop, 1000 / 4);
+        gameLoopTimerId = window.setInterval(gameLoop, 1000 / 2);
     }else{
         drawGame(null, gridStateForClearingRowsAnimation, width, xOffSetState, yOffSetState, ctx,
             yRowsThatNeedClearingArrState, shouldFlash);
@@ -435,7 +463,7 @@ function startGame(){
     currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
 // then start game loop after timeout arg duration
-    gameLoopTimerId = window.setInterval(gameLoop, 1000 / 4);
+    gameLoopTimerId = window.setInterval(gameLoop, 1000 / 2);
 }
 
 
@@ -450,7 +478,7 @@ function startGame(){
 // console.log(printGridAsStr(newGridState, width));
 // drawGridToCanvas(newGridState, ctx);
 
-window.addEventListener("keydown", function(e){
+window.addEventListener("keydown", async function(e){
 
     if(clearingRowsAnimation)
         return;
@@ -459,6 +487,10 @@ window.addEventListener("keydown", function(e){
     console.log(keyString);
 
     if(!gameStartState){
+        // Tone.start() has be called from within a user event listener callback
+        await Tone.start();
+        console.log('audio is ready');
+
         gameStartState = true;
         startGame();
         return;
@@ -471,6 +503,9 @@ window.addEventListener("keydown", function(e){
                 currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)){
                 xOffSetState++;
             }
+            var time = Tone.now();
+            synth.triggerAttack("C6", time);
+            synth.triggerRelease(time + 0.2);
             break;
         case "ArrowRight" :
             xOffSetState++;
@@ -478,6 +513,9 @@ window.addEventListener("keydown", function(e){
                 currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)){
                 xOffSetState--;
             }
+            var time = Tone.now();
+            synth.triggerAttack("C6", time);
+            synth.triggerRelease(time + 0.2);
             break;
         case "ArrowUp" :
             rotationNumberState++;
@@ -486,6 +524,9 @@ window.addEventListener("keydown", function(e){
                 currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)){
                 rotationNumberState--;
             }
+            var time = Tone.now();
+            synth.triggerAttack("A5", time);
+            synth.triggerRelease(time + 0.2);
             break;
     }
     currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);

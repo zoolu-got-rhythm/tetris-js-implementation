@@ -1,0 +1,22 @@
+{
+  "name": "tetrominosrotate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zoolu-got-rhythm/tetris-js-implementation.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zoolu-got-rhythm/tetris-js-implementation/issues"
+  },
+  "homepage": "https://github.com/zoolu-got-rhythm/tetris-js-implementation#readme",
+  "dependencies": {
+    "tone": "^14.7.58"
+  }
+}
