@@ -59,8 +59,11 @@ TetrominoBlock.prototype.rotate = function(nOfRotatationsNumber){
     this.arrayState1dArr = rotatedTetrominoShape;
 }
 
-
-
+// prototypal inheritance
+function inheritTetrominoBlockClassPrototype(subClassFunctionConstructor){
+    subClassFunctionConstructor.prototype = TetrominoBlock.prototype;
+    subClassFunctionConstructor.prototype.constructor = subClassFunctionConstructor;
+}
 
 
 // TetrominoBlock.prototype.implements=function(funcName){
@@ -76,8 +79,7 @@ function Jblock(){
     this.blockShapeLetter = "j";
 }
 
-Jblock.prototype = TetrominoBlock.prototype;
-Jblock.prototype.constructor = Jblock;
+inheritTetrominoBlockClassPrototype(Jblock);
 
 Jblock.prototype.init = function(){
     // return "init";
@@ -87,7 +89,10 @@ Jblock.prototype.init = function(){
 }
 
 
-// duck typing, check if obj implements methods and inherits from TetrominoBlock:
+
+
+
+// duck typing, check if obj implements methods and inherits from TetrominoBlock base class:
 // note: also checks for methods implemented (on prototype) of base class/inherited class
 function checkIfTetrominoSubclassImplementsMethod(objFunctionConstructor, method){
     if(!(new objFunctionConstructor()) instanceof TetrominoBlock)
@@ -112,7 +117,7 @@ function tetrominoObjectFactory(shapeString){
                 tetrominoObject = new Jblock();
                 tetrominoObject.init();
             }else{
-                throw new Error("shape has not implemented init method")
+                throw new Error("tetromino shape has not implemented init method")
             }
 
     }
@@ -121,7 +126,7 @@ function tetrominoObjectFactory(shapeString){
 
 var jBlockInstace = tetrominoObjectFactory("j");
 console.log(jBlockInstace.arrayState1dArr);
-jBlockInstace.rotate(0);
+jBlockInstace.rotate(1);
 console.log(jBlockInstace.arrayState1dArr);
 console.log(jBlockInstace);
 
