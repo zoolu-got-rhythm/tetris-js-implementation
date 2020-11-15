@@ -412,6 +412,7 @@ function gameLoop(){
             currentTetrominoBlockState = [tetrominoTBlock, tetrominoSBlock, tetrominoJBlock][Math.floor(Math.random() * 3)];
             // reset y offset position
             yOffSetState = 0;
+            rotationNumberState = 0;
             xOffSetState = (width / 2) - 2;
             currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
 
