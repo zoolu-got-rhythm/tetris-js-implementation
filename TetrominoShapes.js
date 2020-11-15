@@ -105,7 +105,7 @@ function checkIfTetrominoSubclassImplementsMethod(objFunctionConstructor, method
 
 // factory pattern: get desired object at runtime
 function tetrominoObjectFactory(shapeString){
-    var tetrominoObject;
+    var tetrominoObject; // should I make this null by default?
     switch (shapeString){
         case "j":
             if(checkIfTetrominoSubclassImplementsMethod(Jblock, "init")){
