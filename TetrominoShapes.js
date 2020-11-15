@@ -34,8 +34,7 @@ TetrominoBlock.prototype.rotate = function(nOfRotatationsNumber){
     var rotatedTetrominoShape;
     switch (nOfRotatationsNumber % 4){
         case 0:
-            // return this.arrayState1dArr;
-            return;
+            return this.arrayState1dArr;
         // 90 degrees
         case 1:
             rotatedTetrominoShape = tetromino2dArrayIteratorCallback(this.arrayState1dArr, function(x, y){
@@ -56,7 +55,7 @@ TetrominoBlock.prototype.rotate = function(nOfRotatationsNumber){
             break;
     }
 
-    this.arrayState1dArr = rotatedTetrominoShape;
+    return rotatedTetrominoShape;
 }
 
 // prototypal inheritance
@@ -82,10 +81,15 @@ function Jblock(){
 inheritTetrominoBlockClassPrototype(Jblock);
 
 Jblock.prototype.init = function(){
-    // return "init";
-    this.arrayState1dArr = [0,2,0,
-                            0,2,0,
-                            2,2,0];
+    // make prop "arrayState1dArr" a constant (not re-assignable) and immutable
+    Object.defineProperty(this, "arrayState1dArr", {
+        value: Object.freeze([0,2,0,
+                                    0,2,0,
+                                    2,2,0]),
+        writable: false,
+        enumerable: true,
+        configurable: true
+    });
 }
 
 
@@ -119,14 +123,13 @@ function tetrominoObjectFactory(shapeString){
             }else{
                 throw new Error("tetromino shape has not implemented init method")
             }
-
     }
     return tetrominoObject;
 }
 
 var jBlockInstace = tetrominoObjectFactory("j");
 console.log(jBlockInstace.arrayState1dArr);
-jBlockInstace.rotate(1);
+console.log(jBlockInstace.rotate(1));
 console.log(jBlockInstace.arrayState1dArr);
 console.log(jBlockInstace);
 
