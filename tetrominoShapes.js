@@ -96,9 +96,9 @@ function Jblock(){
 inheritTetrominoBlockClassPrototype(Jblock);
 // make prop "arrayState1dArr" a constant (non re-assignable) and immutable
 createConstantImmutableObjectPropertyOnClass(Jblock, "arrayState1dArr",
-    [2,0,0,
-        2,2,2,
-        0,0,0]);
+    ["j","","",
+        "j","j","j",
+        "","",""]);
 
 
 Jblock.prototype.init = check1dArrayStateBeenAssignedToChildShapeClass;
@@ -112,9 +112,9 @@ function Lblock(){
 inheritTetrominoBlockClassPrototype(Lblock);
 // make prop "arrayState1dArr" a constant (non re-assignable) and immutable
 createConstantImmutableObjectPropertyOnClass(Lblock, "arrayState1dArr",
-    [0,0,2,
-        2,2,2,
-        0,0,0]);
+    ["","","l",
+        "l","l","l",
+        "","",""]);
 
 
 Lblock.prototype.init = check1dArrayStateBeenAssignedToChildShapeClass;
@@ -130,9 +130,9 @@ function Sblock(){
 inheritTetrominoBlockClassPrototype(Sblock);
 // make prop "arrayState1dArr" a constant (non re-assignable) and immutable
 createConstantImmutableObjectPropertyOnClass(Sblock, "arrayState1dArr",
-    [0,1,1,
-        1,1,0,
-        0,0,0]);
+    ["","s","s",
+        "s","s","",
+        "","",""]);
 
 Sblock.prototype.init = check1dArrayStateBeenAssignedToChildShapeClass;
 
@@ -146,9 +146,9 @@ function Zblock(){
 inheritTetrominoBlockClassPrototype(Zblock);
 // make prop "arrayState1dArr" a constant (non re-assignable) and immutable
 createConstantImmutableObjectPropertyOnClass(Zblock, "arrayState1dArr",
-    [1,1,0,
-        0,1,1,
-        0,0,0]);
+    ["z","z","",
+        "","z","z",
+        "","",""]);
 
 Zblock.prototype.init = check1dArrayStateBeenAssignedToChildShapeClass;
 
@@ -164,11 +164,33 @@ function Tblock(){
 inheritTetrominoBlockClassPrototype(Tblock);
 // make prop "arrayState1dArr" a constant (non re-assignable) and immutable
 createConstantImmutableObjectPropertyOnClass(Tblock, "arrayState1dArr",
-    [0,3,0,
-        3,3,3,
-        0,0,0]);
+    ["","t","",
+        "t","t","t",
+        "","",""]);
 
 Tblock.prototype.init = check1dArrayStateBeenAssignedToChildShapeClass;
+
+
+
+function Oblock(){
+    this.blockShapeLetter = "o";
+}
+
+inheritTetrominoBlockClassPrototype(Oblock);
+// make prop "arrayState1dArr" a constant (non re-assignable) and immutable
+createConstantImmutableObjectPropertyOnClass(Oblock, "arrayState1dArr",
+    ["","o","o","",
+        "","o","o","",
+        "","","",""]);
+
+Oblock.prototype.init = check1dArrayStateBeenAssignedToChildShapeClass;
+
+// override rotate on
+Oblock.prototype.rotate = function(){
+    return this.arrayState1dArr;
+}
+
+
 
 
 
@@ -243,6 +265,13 @@ function tetrominoObjectFactory(shapeString){
                 throw new Error("tetromino shape has not implemented init method");
             }
             break;
+        case "o":
+            if(checkIfTetrominoSubclassImplementsMethod(Oblock, "init")){
+                tetrominoObject = new Oblock();
+            }else{
+                throw new Error("tetromino shape has not implemented init method");
+            }
+            break;
         default:
             throw new Error("tetromino shape of this letter does not exist");
             break;
@@ -257,19 +286,21 @@ function tetrominoObjectFactory(shapeString){
     return tetrominoObject;
 }
 
-var jBlockInstance = tetrominoObjectFactory("j");
-console.log(jBlockInstance.arrayState1dArr);
 
-var sBlockInstance = tetrominoObjectFactory("s");
-console.log(sBlockInstance.arrayState1dArr);
-
-var tBlockInstance = tetrominoObjectFactory("t");
-console.log(tBlockInstance.arrayState1dArr);
-
-console.log(sBlockInstance.rotate(1));
-sBlockInstance.arrayState1dArr = [2,2];
-// sBlockInstance.arrayState1dArr.push(2);
-console.log(sBlockInstance.arrayState1dArr);
+// run below code as unit tests using some node js based testing lib
+// var jBlockInstance = tetrominoObjectFactory("j");
+// console.log(jBlockInstance.arrayState1dArr);
+//
+// var sBlockInstance = tetrominoObjectFactory("s");
+// console.log(sBlockInstance.arrayState1dArr);
+//
+// var tBlockInstance = tetrominoObjectFactory("t");
+// console.log(tBlockInstance.arrayState1dArr);
+//
+// console.log(sBlockInstance.rotate(1));
+// sBlockInstance.arrayState1dArr = [2,2];
+// // sBlockInstance.arrayState1dArr.push(2);
+// console.log(sBlockInstance.arrayState1dArr);
 
 // jBlockInstance.arrayState1dArr = [1,2,3,4];
 // // jBlockInstance.arrayState1dArr.push(2);
