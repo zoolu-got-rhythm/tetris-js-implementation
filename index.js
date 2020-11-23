@@ -2,6 +2,9 @@
 
 var Tone = require("tone");
 
+// import tetrominoObjectFactory from "./tetrominoShapes";
+// tetrominoObjectFactory("")
+
 var soundPlayerFallPiece = new Tone.Player("sounds/fall.wav").toDestination();
 var soundPlayerLineClear = new Tone.Player("sounds/clear.wav").toDestination();
 // soundPlayerLineClear.autostart = true;
@@ -20,24 +23,6 @@ synth.volume.value = -35;
 
 console.log("sdf");
 
-var tetrominoSBlock = [0,1,0,
-                        0,1,1,
-                        0,0,1];
-
-var tetrominoJBlock = [0,2,0,
-                        0,2,0,
-                        2,2,0];
-
-var tetrominoTBlock = [0,3,0,
-                        3,3,0,
-                        0,3,0];
-
-// var tetrominoIBlock = [0,0,3,0,
-//                         0,0,3,0,
-//                         0,0,3,0,
-//                         0,0,3,0];
-
-
 function tetromino1dArrToString(arr1d){
     var str = ""
     for (var x = 0; x < 9; x++){
@@ -49,20 +34,6 @@ function tetromino1dArrToString(arr1d){
     return str;
 }
 
-// mapping of tetromino original shape to new degrees of shape via callback
-// maybe rename this function to something including word 'map' rename from 1d to 2d
-function tetromino2dArrayIteratorCallback(origTetrominoShape, fn){
-    var newShape = new Array(16);
-    for (var y = 0; y < 3; y++){
-        for (var x = 0; x < 3; x++){
-            // i = index
-            var i = fn(x, y);
-            newShape[(y * 3) + x] = origTetrominoShape[i];
-        }
-    }
-    return newShape;
-}
-
 function tetromino2dArrayIteratorForEach(tetrominoShape, fn){
     for (var y = 0; y < 3; y++){
         for (var x = 0; x < 3; x++){
@@ -72,34 +43,8 @@ function tetromino2dArrayIteratorForEach(tetrominoShape, fn){
     }
 }
 
+var availableBlockShapeLetters = ["t", "s", "j", "z", "l"];
 
-function rotateTetromino(nOfRotatationsNumber, currentTetromino){
-    var rotatedTetrominoShape;
-    switch (nOfRotatationsNumber % 4){
-        case 0:
-            return currentTetromino;
-        // 90 degrees
-        case 1:
-            rotatedTetrominoShape = tetromino2dArrayIteratorCallback(currentTetromino, function(x, y){
-                return (6 + y) - (x * 3);
-            });
-            break;
-        // 180 degrees
-        case 2:
-            rotatedTetrominoShape = tetromino2dArrayIteratorCallback(currentTetromino, function(x, y){
-                return (8 - x) - (y * 3);
-            });
-            break;
-        // 270 degree
-        case 3:
-            rotatedTetrominoShape = tetromino2dArrayIteratorCallback(currentTetromino, function(x, y){
-                return (2 - y) + (x * 3);
-            });
-            break;
-    }
-
-    return rotatedTetrominoShape;
-}
 
 var lightYellow = "#ffffcc";
 var lilac = "#cc00ff";
@@ -197,7 +142,6 @@ var ctx = canvas.getContext("2d");
 // });
 // var canvas = document.getElementById("tetromino-block");
 // var ctx = canvas.getContext("2d");
-var tetrominoBlocks = [tetrominoSBlock, tetrominoJBlock, tetrominoTBlock];
 
 // canvasesForBlocks.forEach(function(canvasObjRef){
 //     container.append(canvasObjRef.canvas);
@@ -363,7 +307,9 @@ var gridState = [];
 }
 
 var rotationNumberState = 0;
-var currentTetrominoBlockState = tetrominoSBlock;
+var currentTetrominoBlockState = tetrominoObjectFactory(
+    availableBlockShapeLetters[Math.floor(Math.random() * availableBlockShapeLetters.length)]
+);
 var xOffSetState = (width / 2) - 2;
 var yOffSetState = 0;
 var gameStartState = false;
@@ -382,7 +328,7 @@ function gameLoop(){
     // update offset x and y with player input
 
     // if(!clearingRowsAnimation) {
-        currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+        currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState);
 
         yOffSetState++;
         // rotationNumberState++;
@@ -409,12 +355,15 @@ function gameLoop(){
             }
 
             // assign new random tetromino block
-            currentTetrominoBlockState = [tetrominoTBlock, tetrominoSBlock, tetrominoJBlock][Math.floor(Math.random() * 3)];
+            currentTetrominoBlockState = tetrominoObjectFactory(
+                availableBlockShapeLetters[Math.floor(Math.random() * availableBlockShapeLetters.length)]
+            );
             // reset y offset position
             yOffSetState = 0;
             rotationNumberState = 0;
             xOffSetState = (width / 2) - 2;
-            currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+            // the bottom line isn't needed nessasarily
+            currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState);
 
             // if(row of blocks)
             // eleminate row of blocks on that row
@@ -461,7 +410,7 @@ function drawRowsThatNeedClearingAsFlash(){
 
 function startGame(){
     // do 1 initial draw of game in init state
-    currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+    currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState);
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
 // then start game loop after timeout arg duration
     gameLoopTimerId = window.setInterval(gameLoop, 1000 / 2);
@@ -520,7 +469,7 @@ window.addEventListener("keydown", async function(e){
             break;
         case "ArrowUp" :
             rotationNumberState++;
-            currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+            currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState);
             if(isShapeBottomCollidingWithAnotherSymbol(
                 currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)){
                 rotationNumberState--;
@@ -530,6 +479,6 @@ window.addEventListener("keydown", async function(e){
             synth.triggerRelease(time + 0.2);
             break;
     }
-    currentTetrominoBlockWhenRotated = rotateTetromino(rotationNumberState, currentTetrominoBlockState);
+    currentTetrominoBlockWhenRotated = currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState);
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
 })
