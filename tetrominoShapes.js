@@ -13,6 +13,7 @@
 
 // mapping of tetromino original shape to new degrees of shape via callback
 // maybe rename this function to something including word 'map' rename from 1d to 2d
+// this function only works with 3x3 tetromino shapes
 function tetromino2dArrayIteratorCallback(origTetrominoShape, fn){
     var newShape = new Array(9);
     for (var y = 0; y < 3; y++){
@@ -191,6 +192,54 @@ Oblock.prototype.rotate = function(){
 }
 
 
+function Iblock(){
+    this.blockShapeLetter = "i";
+}
+
+inheritTetrominoBlockClassPrototype(Iblock);
+// make prop "arrayState1dArr" a constant (non re-assignable) and immutable
+createConstantImmutableObjectPropertyOnClass(Iblock, "arrayState1dArr",
+    ["","","","",
+        "i","i","i","i",
+        "","","","",
+        "","","",""]);
+
+Iblock.prototype.init = check1dArrayStateBeenAssignedToChildShapeClass;
+
+// override rotate on
+Iblock.prototype.rotate = function(rotationNumber){
+    // implement
+    var rotatedTetrominoShape;
+    switch (rotationNumber % 4){
+        case 0:
+            return this.arrayState1dArr;
+        // 90 degrees
+        case 1:
+            rotatedTetrominoShape = ["","","i","",
+                                "","","i","",
+                                "","","i","",
+                                "","","i",""];
+            break;
+        // 180 degrees
+        case 2:
+            rotatedTetrominoShape = ["","","","",
+                                "","","","",
+                                "i","i","i","i",
+                                "","","",""];
+            break;
+        // 270 degree
+        case 3:
+            rotatedTetrominoShape = ["","i","","",
+                                "","i","","",
+                                "","i","","",
+                                "","i","",""];
+            break;
+    }
+
+    return rotatedTetrominoShape;
+}
+
+
 
 
 
@@ -228,54 +277,40 @@ function checkIfTetrominoSubclassImplementsMethod(objFunctionConstructor, /*meth
 
 // factory pattern: get desired object at runtime
 function tetrominoObjectFactory(shapeString){
-    var tetrominoObject; // should I make this null by default?
+    var TetrominoObjectConstructor; // should I make this null by default?
     switch (shapeString){
         case "j":
-            if(checkIfTetrominoSubclassImplementsMethod(Jblock, "init")){
-                tetrominoObject = new Jblock();
-            }else{
-                throw new Error("tetromino shape has not implemented init method");
-            }
+            TetrominoObjectConstructor = Jblock;
             break;
         case "s":
-            if(checkIfTetrominoSubclassImplementsMethod(Sblock, "init")){
-                tetrominoObject = new Sblock();
-            }else{
-                throw new Error("tetromino shape has not implemented init method");
-            }
+            TetrominoObjectConstructor = Sblock;
             break;
         case "t":
-            if(checkIfTetrominoSubclassImplementsMethod(Tblock, "init")){
-                tetrominoObject = new Tblock();
-            }else{
-                throw new Error("tetromino shape has not implemented init method");
-            }
+            TetrominoObjectConstructor = Tblock;
             break;
         case "l":
-            if(checkIfTetrominoSubclassImplementsMethod(Lblock, "init")){
-                tetrominoObject = new Lblock();
-            }else{
-                throw new Error("tetromino shape has not implemented init method");
-            }
+            TetrominoObjectConstructor = Lblock;
             break;
         case "z":
-            if(checkIfTetrominoSubclassImplementsMethod(Zblock, "init")){
-                tetrominoObject = new Zblock();
-            }else{
-                throw new Error("tetromino shape has not implemented init method");
-            }
+            TetrominoObjectConstructor = Zblock;
             break;
         case "o":
-            if(checkIfTetrominoSubclassImplementsMethod(Oblock, "init")){
-                tetrominoObject = new Oblock();
-            }else{
-                throw new Error("tetromino shape has not implemented init method");
-            }
+            TetrominoObjectConstructor = Oblock;
+            break;
+        case "i":
+            TetrominoObjectConstructor = Iblock;
             break;
         default:
             throw new Error("tetromino shape of this letter does not exist");
             break;
     }
+    var tetrominoObject;
+    if(checkIfTetrominoSubclassImplementsMethod(TetrominoObjectConstructor, "init")){
+       tetrominoObject = new TetrominoObjectConstructor();
+    }else{
+        throw new Error("tetromino shape class: " + TetrominoObjectConstructor.name + " has not implemented init method");
+    }
+
     try{
         // init method does a check too see if array has been set for shape block class overriding one on super class
         tetrominoObject.init.call(tetrominoObject);
