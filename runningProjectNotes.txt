@@ -1,3 +1,0 @@
-browserify index.js > bundle.js
-http-server ./ -c-1
-
