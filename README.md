@@ -1,5 +1,5 @@
 # Tetris JS implementation
-![screenshot](./tetrisJsScreenshot2.png =100x)
+<img src="./tetrisJsScreenshot2.png" alt="screenshot" width="100"/>
 ## how to run
 - install 'browserify' and 'http-server' via npm & node.js
 - browserify index.js > bundle.js (run this command in project folder root)
