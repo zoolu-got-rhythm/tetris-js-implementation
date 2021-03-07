@@ -101,12 +101,13 @@ function colourTetrominoBlock(x, y, canvasCtx, colour, gameGridArrWidth, screenW
     canvasCtx.fillRect(((x % gameGridArrWidth) * blockSize) + blockSize - (blockSize / 5), y * blockSize, (blockSize / 5), blockSize);
 }
 
+var screenWidth = 200;
 // add grid w and h params to this draw function
 function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, xOffSet, yOffSet, canvasCtx,
                   yRowNumbersThatNeedClearing1dArr, lightUpYRowThatNeedsClearing){
     canvasCtx.fillStyle = "#000000";
 
-    var screenWidth = 280;
+    // var screenWidth = 280;
     // var blockSize = 200 / 10;
     canvasCtx.fillRect(0,0, screenWidth, (screenWidth / gameGridWidth) * 16);
     var y = 0;
@@ -280,43 +281,60 @@ function clearRowsOnGridArr1dByYNumbers(arrOfYNumbers, gridStateArr1d, gridWidth
 }
 
 
-// init game state vars
-// grid height and width
-var height = 16;
-var width = 12;
-var gridState = [];
-{
-    for(let y = 0; y < height; y++){
-        for(let x = 0; x < width; x++){
-            // inset outside wall cells
-            if(x == 0 || x == width - 1 || y == height - 1){
-                gridState.push("#");
-                // fill empty cells
-            }else{
-                // console.log("#");
-                gridState.push(" ");
-            }
-        }
-    }
-}
+// declare game state vars
+var height;
+var width;
+var gridState;
 
+let tetrominoBlockLettersBuffer;
 
-const tetrominoBlockLettersBuffer = new BlockLettersBufferController(availableBlockShapeLetters, 4);
-
-var rotationNumberState = 0;
-var currentTetrominoBlockState = tetrominoObjectFactory(tetrominoBlockLettersBuffer.getNextLetter());
-var xOffSetState = (width / 2) - 2;
-var yOffSetState = 0;
-var gameStartState = false;
+var rotationNumberState;
+var currentTetrominoBlockState;
+var xOffSetState;
+var yOffSetState;
+var gameStartState;
 
 var currentTetrominoBlockWhenRotated;
 // var currentTetrominoBlock = tetrominoIBlock;
 var gridStateForClearingRowsAnimation;
-var clearingRowsAnimation = false;
+var clearingRowsAnimation;
 
 var yRowsThatNeedClearingArrState; // held in global state so can be accessed by clearingRowsAnimation, to know which rows to flash
 var gameLoopTimerId;
 var flashRowsThatNeedToClearAnimationTimerId;
+
+
+// initialize game state vars
+function init(){
+
+    // grid height and width (n of rows and columns squares)
+    height = 16;
+    width = 12;
+    gridState = [];
+
+    {
+        for(let y = 0; y < height; y++){
+            for(let x = 0; x < width; x++){
+                // inset outside wall cells
+                if(x == 0 || x == width - 1 || y == height - 1){
+                    gridState.push("#");
+                    // fill empty cells
+                }else{
+                    // console.log("#");
+                    gridState.push(" ");
+                }
+            }
+        }
+    }
+
+    tetrominoBlockLettersBuffer = new BlockLettersBufferController(availableBlockShapeLetters, 4);
+    rotationNumberState = 0;
+    currentTetrominoBlockState = tetrominoObjectFactory(tetrominoBlockLettersBuffer.getNextLetter());
+    xOffSetState = (width / 2) - 2;
+    yOffSetState = 0;
+    gameStartState = false;
+    clearingRowsAnimation = false;
+}
 
 function gameLoop(){
     // read in from player input (maybe a buffer?)
@@ -329,6 +347,15 @@ function gameLoop(){
         // rotationNumberState++;
         if (isShapeBottomCollidingWithAnotherSymbol(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState)) {
             // newGridState = prevGridState;
+
+            // gameover
+            if(yOffSetState == 1){
+                window.clearInterval(gameLoopTimerId);
+                drawGameOver();
+                init(); // reset game state to initial game state
+                return;
+            }
+
             yOffSetState--;
             // rotationNumberState--;
             var newGridState =
@@ -402,6 +429,21 @@ function drawRowsThatNeedClearingAsFlash(){
     nOfFlashOnAndOffTicks++;
 }
 
+
+function drawGameOver(){
+    ctx.strokeStyle= "white"; //set the color of the stroke line
+    ctx.lineWidth = 4;  //define the width of the stroke line
+    ctx.fillStyle = "red";
+    ctx.font = "20px Arial";
+    ctx.textAlign = "center";
+    ctx.strokeText("Game Over", screenWidth/2, ((screenWidth / width) * 16) / 2);
+    ctx.fillText("Game Over", screenWidth/2, ((screenWidth / width) * 16) / 2);
+
+    ctx.font = "10px Arial";
+    ctx.strokeText("press any key to play again", screenWidth/2, 30 + ((screenWidth / width) * 16) / 2);
+    ctx.fillText("press any key to play again", screenWidth/2, 30 + ((screenWidth / width) * 16) / 2);
+}
+
 function startGame(){
     // do 1 initial draw of game in init state
     h2NextPieceElementRef.innerText = "next letter = " + tetrominoBlockLettersBuffer.whatsNext().toUpperCase();
@@ -468,4 +510,5 @@ window.addEventListener("keydown", async function(e){
 })
 
 
+init();
 drawGame(null, gridState, width, xOffSetState, yOffSetState, ctx);

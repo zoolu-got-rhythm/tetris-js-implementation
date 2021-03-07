@@ -26,10 +26,9 @@ function tetromino2dArrayIteratorCallback(origTetrominoShape, fn){
     return newShape;
 }
 
-
 function TetrominoBlock(){}
 
-TetrominoBlock.prototype.arrayState1dArr = [];
+TetrominoBlock.prototype.arrayState1dArr = []; // if this was java, this prop would be defined with 'protected'
 
 TetrominoBlock.prototype.rotate = function(nOfRotatationsNumber){
 
@@ -63,11 +62,10 @@ TetrominoBlock.prototype.rotate = function(nOfRotatationsNumber){
 // abstract away re-usable prototypal inheritance, that can be used for each tetromino shape class
 function inheritTetrominoBlockClassPrototype(subClassFunctionConstructor){
     subClassFunctionConstructor.prototype = new TetrominoBlock();
-    subClassFunctionConstructor.prototype.constructor = subClassFunctionConstructor;
+    subClassFunctionConstructor.prototype.constructor = subClassFunctionConstructor; // is this line still needed?
 }
 
 // re-usable
-
 // issue with this function by the looks
 function createConstantImmutableObjectPropertyOnClass(functionConstructor, propertyNameString, property){
     console.log(functionConstructor);
@@ -301,7 +299,7 @@ function tetrominoObjectFactory(shapeString){
             TetrominoObjectConstructor = Iblock;
             break;
         default:
-            throw new Error("tetromino shape of this letter does not exist");
+            throw new Error(`tetromino shape of ${shapeString} letter does not exist`);
             break;
     }
     var tetrominoObject;

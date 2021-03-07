@@ -16,7 +16,8 @@ BlockLettersBufferController.prototype.whatsNext = function(){
     return this.bufferArr[0];
 }
 
-// should run this method asynchronously
+// should run this method asynchronously (chuck it on the browser event loop)
+// this method should also be private/not exposed ?
 BlockLettersBufferController.prototype.addNewLettersToBuffer = function(){
     while(this.bufferArr.length !== this.bufferSize){
         let randomLetter = this.lettersArr[Math.floor(Math.random() * this.lettersArr.length)];
