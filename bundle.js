@@ -425,7 +425,7 @@ function drawRowsThatNeedClearingAsFlash(){
         clearingRowsAnimation = false;
         drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
         if(gameInSpeedUpMode){
-            gameInSpeedUpMode = false; 
+            gameInSpeedUpMode = false;
         }else{
             gameLoopTimerId = window.setInterval(gameLoop, normalGameFPS);
         }
@@ -537,11 +537,6 @@ window.addEventListener("keyup", async function(e){
         }
     }
 });
-
-
-
-
-
 
 init();
 drawGame(null, gridState, width, xOffSetState, yOffSetState, ctx);
