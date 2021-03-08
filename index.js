@@ -411,6 +411,9 @@ function gameLoop(){
     }
 }
 
+var normalGameFPS = 1000 / 4;
+var speedUpGameFPS = 1000 / 10;
+
 var shouldFlash = false;
 var nOfFlashOnAndOffTicks = 0;
 function drawRowsThatNeedClearingAsFlash(){
@@ -420,7 +423,11 @@ function drawRowsThatNeedClearingAsFlash(){
         nOfFlashOnAndOffTicks = 0;
         clearingRowsAnimation = false;
         drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
-        gameLoopTimerId = window.setInterval(gameLoop, 1000 / 4);
+        if(gameInSpeedUpMode){
+            gameInSpeedUpMode = false;
+        }else{
+            gameLoopTimerId = window.setInterval(gameLoop, normalGameFPS);
+        }
     }else{
         drawGame(null, gridStateForClearingRowsAnimation, width, xOffSetState, yOffSetState, ctx,
             yRowsThatNeedClearingArrState, shouldFlash);
@@ -450,10 +457,11 @@ function startGame(){
     currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState);
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
 // then start game loop after timeout arg duration
-    gameLoopTimerId = window.setInterval(gameLoop, 1000 / 4);
+    gameLoopTimerId = window.setInterval(gameLoop, normalGameFPS);
 }
 
 
+let gameInSpeedUpMode = false;
 window.addEventListener("keydown", async function(e){
 
     if(clearingRowsAnimation)
@@ -504,11 +512,30 @@ window.addEventListener("keydown", async function(e){
             synth.triggerAttack("A5", time);
             synth.triggerRelease(time + 0.2);
             break;
+        case "ArrowDown":
+            // console.log("ARROW DOWN");
+            if(!gameInSpeedUpMode){
+                window.clearInterval(gameLoopTimerId);
+                gameLoopTimerId = window.setInterval(gameLoop, speedUpGameFPS);
+                gameInSpeedUpMode = true;
+            }
+            break;
     }
     currentTetrominoBlockWhenRotated = currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState);
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, xOffSetState, yOffSetState, ctx);
-})
+});
 
+// what's async function prefix doing here? get rid of it?
+window.addEventListener("keyup", async function(e){
+    var keyString = e.code;
+    if(keyString === "ArrowDown"){
+        gameInSpeedUpMode = false;
+        if(!clearingRowsAnimation){
+            window.clearInterval(gameLoopTimerId);
+            gameLoopTimerId = window.setInterval(gameLoop, normalGameFPS);
+        }
+    }
+});
 
 init();
 drawGame(null, gridState, width, xOffSetState, yOffSetState, ctx);
