@@ -336,6 +336,7 @@ function init(){
     tetrominoBlockLettersBuffer = new BlockLettersBufferController(availableBlockShapeLetters, 4);
     rotationNumberState = 0;
     currentTetrominoBlockState = tetrominoObjectFactory(tetrominoBlockLettersBuffer.getNextLetter());
+    nextTetrominoBlockState1dArr = tetrominoObjectFactory(tetrominoBlockLettersBuffer.whatsNext()).rotate(0);
     xOffSetState = (width / 2) - 2;
     yOffSetState = 0;
     gameStartState = false;
@@ -454,12 +455,12 @@ function drawGameOver(screenWidth){
     ctx.strokeStyle= "white"; //set the color of the stroke line
     ctx.lineWidth = 4;  //define the width of the stroke line
     ctx.fillStyle = "red";
-    ctx.font = "20px Arial";
+    ctx.font = "26px Arial";
     ctx.textAlign = "center";
     ctx.strokeText("Game Over", screenWidth/2, ((screenWidth / width) * height) / 2);
     ctx.fillText("Game Over", screenWidth/2, ((screenWidth / width) * height) / 2);
 
-    ctx.font = "10px Arial";
+    ctx.font = "15px Arial";
     ctx.strokeText("press any key to play again", screenWidth/2, 30 + ((screenWidth / width) * height) / 2);
     ctx.fillText("press any key to play again", screenWidth/2, 30 + ((screenWidth / width) * height) / 2);
 }
@@ -467,7 +468,9 @@ function drawGameOver(screenWidth){
 function startGame(){
     // do 1 initial draw of game in init state
     h2NextPieceElementRef.innerText = "next letter = " + tetrominoBlockLettersBuffer.whatsNext().toUpperCase();
-    currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState);
+    drawGame(nextTetrominoBlockState1dArr, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 1, 0,
+        nextPieceCtx, undefined, undefined, nextPieceScreenWidth);
+    currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState); // should move this line to init() block
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, height, xOffSetState, yOffSetState, ctx, undefined, gameScreenWidth);
 // then start game loop after timeout arg duration
     gameLoopTimerId = window.setInterval(gameLoop, normalGameFPS);
