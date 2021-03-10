@@ -327,7 +327,7 @@ function createInitialGridWithWall(gridHeight, gridWidth){
 function init(){
 
     // grid height and width (n of rows and columns squares)
-    height = 16;
+    height = 21;
     width = 12;
     gridState = createInitialGridWithWall(height, width);
 
