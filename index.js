@@ -311,7 +311,7 @@ function createInitialGridWithWall(gridHeight, gridWidth){
     for(let y = 0; y < gridHeight; y++){
         for(let x = 0; x < gridWidth; x++){
             // inset outside wall cells
-            if(x == 0 || x == gridWidth - 1 || y == gridHeight - 1){
+            if(x == 0 || y == 0 || x == gridWidth - 1 || y == gridHeight - 1){
                 grid.push("#");
                 // fill empty cells
             }else{
@@ -327,7 +327,7 @@ function createInitialGridWithWall(gridHeight, gridWidth){
 function init(){
 
     // grid height and width (n of rows and columns squares)
-    height = 21;
+    height = 22;
     width = 12;
     gridState = createInitialGridWithWall(height, width);
 
@@ -389,7 +389,7 @@ function gameLoop(){
             console.log(nextTetrominoBlockState1dArr);
 
 
-            drawGame(nextTetrominoBlockState1dArr, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 1, 0,
+            drawGame(nextTetrominoBlockState1dArr, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 2, 2,
                 nextPieceCtx, undefined, undefined, nextPieceScreenWidth);
             h2NextPieceElementRef.innerText = "next letter = " + tetrominoBlockLettersBuffer.whatsNext().toUpperCase();
             // reset y offset position
@@ -467,7 +467,7 @@ function drawGameOver(screenWidth){
 function startGame(){
     // do 1 initial draw of game in init state
     h2NextPieceElementRef.innerText = "next letter = " + tetrominoBlockLettersBuffer.whatsNext().toUpperCase();
-    drawGame(nextTetrominoBlockState1dArr, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 1, 0,
+    drawGame(nextTetrominoBlockState1dArr, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 2, 2,
         nextPieceCtx, undefined, undefined, nextPieceScreenWidth);
     currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState); // should move this line to init() block
     drawGame(currentTetrominoBlockWhenRotated, gridState, width, height, xOffSetState, yOffSetState, ctx, undefined, gameScreenWidth);
@@ -557,9 +557,9 @@ drawGame(null, gridState, width, height, xOffSetState, yOffSetState, ctx, undefi
 
 let nextPieceCanvasRef = document.getElementById("next-block");
 let nextPieceCtx = nextPieceCanvasRef.getContext("2d");
-let nextPieceGridWidth = 6;
-let nextPieceGridHeight = 3;
-let nextPieceScreenWidth = 125;
+let nextPieceGridWidth = 8;
+let nextPieceGridHeight = 6;
+let nextPieceScreenWidth = 115;
 let nextPieceGrid = createInitialGridWithWall(nextPieceGridHeight, nextPieceGridWidth);
-drawGame(null, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 1, 0, nextPieceCtx, undefined, undefined, nextPieceScreenWidth);
+drawGame(null, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 2, 2, nextPieceCtx, undefined, undefined, nextPieceScreenWidth);
 
