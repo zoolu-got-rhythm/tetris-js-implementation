@@ -6,6 +6,15 @@
     <style>
         #tetris{
             /*border: 2px solid grey;*/
+            float: left;
+        }
+        canvas{
+            border: 2px solid grey;
+        }
+
+        #next-block{
+            float: left;
+            display: inline;
         }
     </style>
 </head>
@@ -18,8 +27,10 @@
 
     </div>
 
+
     <canvas id="tetris" width="300" height="500"> </canvas>
-<!--    <script type="module" src="node_modules/tone/build/esm/index.js"></script>-->
+    <canvas id="next-block" width="150" height="150"> </canvas>
+    <!--    <script type="module" src="node_modules/tone/build/esm/index.js"></script>-->
     <script src="tetrominoShapes.js"> </script>
     <script src="blockLettersBuffer.js"> </script>
     <script src="ColourShader.js"> </script>
