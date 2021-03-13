@@ -261,12 +261,13 @@ function clearRowsOnGridArr1dByYNumbers(arrOfYNumbers, gridStateArr1d, gridWidth
     arrOfYNumbers.forEach((yNumber)=>{
         console.log("spliced");
         console.log(gridStateArdd1dCopy.splice(yNumber * gridWidth, gridWidth));
-
-
         console.log(gridStateArdd1dCopy);
     });
 
-    var newEmptyRow = []
+    const topBoundary1dArr = gridStateArdd1dCopy.splice(0, gridWidth);
+
+
+    var newEmptyRow = [];
     for(var j = 0; j < arrOfYNumbers.length; j++)
         for(var i = 0; i < gridWidth; i++){
             if(i == 0 || i == gridWidth - 1){
@@ -274,14 +275,13 @@ function clearRowsOnGridArr1dByYNumbers(arrOfYNumbers, gridStateArr1d, gridWidth
             }else{
                 newEmptyRow.push("");
             }
-
         }
+    
     console.log(newEmptyRow);
-    gridStateArdd1dCopy = newEmptyRow.concat(gridStateArdd1dCopy);
+    gridStateArdd1dCopy = topBoundary1dArr.concat(newEmptyRow).concat(gridStateArdd1dCopy);
 
     return gridStateArdd1dCopy;
 }
-
 
 // declare game state vars
 var height;
@@ -338,7 +338,7 @@ function init(){
     currentTetrominoBlockState = tetrominoObjectFactory(tetrominoBlockLettersBuffer.getNextLetter());
     nextTetrominoBlockState1dArr = tetrominoObjectFactory(tetrominoBlockLettersBuffer.whatsNext()).rotate(0);
     xOffSetState = (width / 2) - 2;
-    yOffSetState = 0;
+    yOffSetState = 1;
     gameStartState = false;
     clearingRowsAnimation = false;
 }
@@ -394,7 +394,7 @@ function gameLoop(){
                 nextPieceCtx, undefined, undefined, nextPieceScreenWidth);
             h2NextPieceElementRef.innerText = "next letter = " + tetrominoBlockLettersBuffer.whatsNext().toUpperCase();
             // reset y offset position
-            yOffSetState = 0;
+            yOffSetState = 1;
             rotationNumberState = 0;
             xOffSetState = (width / 2) - 2;
             // the bottom line isn't needed nessasarily
@@ -426,7 +426,7 @@ function gameLoop(){
 }
 
 var normalGameFPS = 1000 / 4;
-var speedUpGameFPS = 1000 / 10;
+var speedUpGameFPS = 1000 / 14;
 
 var shouldFlash = false;
 var nOfFlashOnAndOffTicks = 0;
