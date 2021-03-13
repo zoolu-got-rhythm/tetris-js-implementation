@@ -258,9 +258,10 @@ function clearRowsOnGridArr1dByYNumbers(arrOfYNumbers, gridStateArr1d, gridWidth
     var gridStateArdd1dCopy = gridStateArr1d.slice();
     console.log(gridStateArdd1dCopy);
     arrOfYNumbers.forEach((yNumber)=>{
-        console.log("spliced");
-        console.log(gridStateArdd1dCopy.splice(yNumber * gridWidth, gridWidth));
-        console.log(gridStateArdd1dCopy);
+        // console.log("spliced");
+        // mutation
+        gridStateArdd1dCopy.splice(yNumber * gridWidth, gridWidth);
+        // console.log(gridStateArdd1dCopy);
     });
 
     const topBoundary1dArr = gridStateArdd1dCopy.splice(0, gridWidth);
@@ -355,7 +356,7 @@ function gameLoop(){
             // newGridState = prevGridState;
 
             // gameover
-            if(yOffSetState == 1){
+            if(yOffSetState <= 2){
                 window.clearInterval(gameLoopTimerId);
                 drawGameOver(gameScreenWidth);
                 init(); // reset game state to initial game state
@@ -470,7 +471,7 @@ function startGame(){
     drawGame(nextTetrominoBlockState1dArr, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 2, 2,
         nextPieceCtx, undefined, undefined, nextPieceScreenWidth);
     currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState); // should move this line to init() block
-    drawGame(currentTetrominoBlockWhenRotated, gridState, width, height, xOffSetState, yOffSetState, ctx, undefined, gameScreenWidth);
+    drawGame(currentTetrominoBlockWhenRotated, gridState, width, height, xOffSetState, yOffSetState, ctx, undefined, undefined, gameScreenWidth);
 // then start game loop after timeout arg duration
     gameLoopTimerId = window.setInterval(gameLoop, normalGameFPS);
 }
