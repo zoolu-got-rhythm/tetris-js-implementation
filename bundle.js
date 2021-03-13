@@ -103,7 +103,7 @@ function colourTetrominoBlock(x, y, canvasCtx, colour, gameGridArrWidth, screenW
     canvasCtx.fillRect(((x % gameGridArrWidth) * blockSize) + blockSize - (blockSize / 5), y * blockSize, (blockSize / 5), blockSize);
 }
 
-var gameScreenWidth = 250;
+var gameScreenWidth = 270;
 // add grid w and h params to this draw function
 function drawGame(tetrominoShapeArr1d, gameGridStateArr1d, gameGridWidth, height, xOffSet, yOffSet, canvasCtx,
                   yRowNumbersThatNeedClearing1dArr, lightUpYRowThatNeedsClearing, screenWidth){
