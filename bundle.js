@@ -2,6 +2,7 @@
 // import * as Tone from 'tone'
 
 var Tone = require("tone");
+const stopWatch = new StopWatch();
 
 // import tetrominoObjectFactory from "./tetrominoShapes";
 // tetrominoObjectFactory("")
@@ -10,6 +11,7 @@ var soundPlayerFallPiece = new Tone.Player("sounds/fall.wav").toDestination();
 var soundPlayerLineClear = new Tone.Player("sounds/clear.wav").toDestination();
 // soundPlayerLineClear.autostart = true;
 soundPlayerLineClear.playbackRate = 0.55;
+soundPlayerLineClear.volume.value = -10;
 
 //create a synth and connect it to the main output (your speakers)
 
@@ -18,11 +20,13 @@ synth.oscillator.type = "square";
 // synth.volume()
 
 //play a middle 'C' for the duration of an 8th note
-synth.triggerAttackRelease("C1", "32n");
+// synth.triggerAttackRelease("C1", "32n");
 synth.volume.value = -35;
 
 
 console.log("sdf");
+
+let timeRef = document.getElementById("time");
 
 function tetromino1dArrToString(arr1d){
     var str = ""
@@ -182,7 +186,7 @@ var container = document.getElementById("container");
 var canvas = document.getElementById("tetris");
 var ctx = canvas.getContext("2d");
 
-var h2NextPieceElementRef = document.getElementById("next-piece");
+// var h2NextPieceElementRef = document.getElementById("next-piece");
 
 
 // function printGridAsStr(gridArr1d, w){
@@ -358,6 +362,8 @@ function gameLoop(){
 
             // gameover
             if(yOffSetState <= 2){
+                // wrap into a gameover function
+                stopWatch.stopTimer();
                 window.clearInterval(gameLoopTimerId);
                 drawGameOver(gameScreenWidth);
                 init(); // reset game state to initial game state
@@ -393,7 +399,7 @@ function gameLoop(){
 
             drawGame(nextTetrominoBlockState1dArr, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 2, 2,
                 nextPieceCtx, undefined, undefined, nextPieceScreenWidth);
-            h2NextPieceElementRef.innerText = "next letter = " + tetrominoBlockLettersBuffer.whatsNext().toUpperCase();
+            // h2NextPieceElementRef.innerText = "next letter = " + tetrominoBlockLettersBuffer.whatsNext().toUpperCase();
             // reset y offset position
             yOffSetState = 1;
             rotationNumberState = 0;
@@ -424,6 +430,8 @@ function gameLoop(){
         drawGame(null, gridStateForClearingRowsAnimation, width, height, xOffSetState, yOffSetState, ctx, yRowsThatNeedClearingArrState, true, gameScreenWidth);
         flashRowsThatNeedToClearAnimationTimerId = window.setInterval(drawRowsThatNeedClearingAsFlash, 1000 / 8)
     }
+
+    timeRef.innerHTML = stopWatch.getTimeElapsedInStopWatchFormatString;
 }
 
 var normalGameFPS = 1000 / 4;
@@ -467,8 +475,11 @@ function drawGameOver(screenWidth){
 }
 
 function startGame(){
+    console.log(stopWatch)
+    stopWatch.reset();
+    stopWatch.startTimer();
     // do 1 initial draw of game in init state
-    h2NextPieceElementRef.innerText = "next letter = " + tetrominoBlockLettersBuffer.whatsNext().toUpperCase();
+    // h2NextPieceElementRef.innerText = "next letter = " + tetrominoBlockLettersBuffer.whatsNext().toUpperCase();
     drawGame(nextTetrominoBlockState1dArr, nextPieceGrid, nextPieceGridWidth, nextPieceGridHeight, 2, 2,
         nextPieceCtx, undefined, undefined, nextPieceScreenWidth);
     currentTetrominoBlockWhenRotated = currentTetrominoBlockState.rotate(rotationNumberState); // should move this line to init() block
@@ -505,7 +516,7 @@ window.addEventListener("keydown", async function(e){
                 xOffSetState++;
             }
             var time = Tone.now();
-            synth.triggerAttack("C6", time);
+            synth.triggerAttack("C2", time);
             synth.triggerRelease(time + 0.2);
             break;
         case "ArrowRight" :
@@ -515,7 +526,7 @@ window.addEventListener("keydown", async function(e){
                 xOffSetState--;
             }
             var time = Tone.now();
-            synth.triggerAttack("C6", time);
+            synth.triggerAttack("C2", time);
             synth.triggerRelease(time + 0.2);
             break;
         case "ArrowUp" :
@@ -526,7 +537,7 @@ window.addEventListener("keydown", async function(e){
                 rotationNumberState--;
             }
             var time = Tone.now();
-            synth.triggerAttack("A5", time);
+            synth.triggerAttack("A2", time);
             synth.triggerRelease(time + 0.2);
             break;
         case "ArrowDown":
