@@ -47,8 +47,8 @@ class StopWatch{
     }
 
     get getTimeElapsedInStopWatchFormatString(){
-        console.log("mins");
-        console.log(this.getTimeElapsedInMinutes);
+        // console.log("mins");
+        // console.log(this.getTimeElapsedInMinutes);
         let minsNumberAsString = String(this.getTimeElapsedInMinutes);
         let minsAs2Digits = minsNumberAsString.length > 1 ? minsNumberAsString : "0" + minsNumberAsString;
 
@@ -57,8 +57,6 @@ class StopWatch{
 
         let millaSecondAs2DigitNumberAsString = "0" + String(Math.floor(this.getCurrentMillaSecondElapsedAsFraction * 10));
 
-
         return `${minsAs2Digits}:${secondsAs2Digits}:${millaSecondAs2DigitNumberAsString}`;
-
     }
 }
