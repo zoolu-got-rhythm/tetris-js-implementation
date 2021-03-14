@@ -1,5 +1,5 @@
 # Tetris JS implementation
-<img src="./tetrisJsScreenshot2.png" alt="screenshot" width="150"/>
+<img src="./version2.png" alt="screenshot" width="170"/>
 
 ## how to run
 - make sure you have node.js and npm installed 
