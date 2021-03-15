@@ -60,3 +60,5 @@ class StopWatch{
         return `${minsAs2Digits}:${secondsAs2Digits}:${millaSecondAs2DigitNumberAsString}`;
     }
 }
+
+module.exports = StopWatch;
